@@ -283,7 +283,7 @@
         <span class="student-name">${s.성명}</span>
         <span class="badge badge-반">${s.반}반 ${s.번호}번</span>
         <span class="badge badge-모둠">${s.모둠}모둠</span>
-        <span class="badge badge-count${s.제출수 === 0 ? ' zero' : ''}">${s.제출수}회 제출</span>
+        <span class="badge badge-count${(s.제출수 || 0) === 0 ? ' zero' : ''}">${s.제출수 ?? '-'}회 제출</span>
       </div>`;
     });
     html += '</div>';
