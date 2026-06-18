@@ -159,6 +159,7 @@
 
   let allStudents = [];
   let selectedStudent = null;
+  const studentMap = {}; // 학번 → 학생 객체
 
   function saveScriptUrl() {
     const val = document.getElementById('scriptUrlInput').value.trim();
@@ -206,6 +207,7 @@
     jsonp(SCRIPT_URL + '?action=getStudents')
       .then(students => {
         allStudents = students;
+        students.forEach(s => { studentMap[s.학번] = s; });
         buildFilters(students);
         renderStudents(students);
       })
@@ -275,7 +277,7 @@
     students.forEach(s => {
       const isSelected = selectedStudent && selectedStudent.학번 === s.학번;
       html += `<div class="student-item${isSelected ? ' selected' : ''}"
-        onclick="selectStudent(${JSON.stringify(s)}, this)">
+        onclick="selectStudent('${s.학번}', this)">
         <span class="student-name">${s.성명}</span>
         <span class="badge badge-반">${s.반}반 ${s.번호}번</span>
         <span class="badge badge-모둠">${s.모둠}모둠</span>
@@ -285,7 +287,8 @@
     sec.innerHTML = html;
   }
 
-  function selectStudent(s, el) {
+  function selectStudent(학번, el) {
+    const s = studentMap[학번];
     selectedStudent = s;
     document.querySelectorAll('.student-item').forEach(i => i.classList.remove('selected'));
     el.classList.add('selected');
