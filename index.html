@@ -79,6 +79,8 @@
   .badge { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 0.78rem; font-weight: 600; }
   .badge-반 { background: #e8f5e9; color: #2e7d32; }
   .badge-모둠 { background: #fff3e0; color: #e65100; }
+  .badge-count { background: #e8f5e9; color: #2e7d32; }
+  .badge-count.zero { background: #f5f5f5; color: #bbb; }
   .student-name { font-weight: 600; font-size: 1rem; flex: 1; }
 
   .submissions-section { margin-bottom: 8px; }
@@ -281,6 +283,7 @@
         <span class="student-name">${s.성명}</span>
         <span class="badge badge-반">${s.반}반 ${s.번호}번</span>
         <span class="badge badge-모둠">${s.모둠}모둠</span>
+        <span class="badge badge-count${s.제출수 === 0 ? ' zero' : ''}">${s.제출수}회 제출</span>
       </div>`;
     });
     html += '</div>';
