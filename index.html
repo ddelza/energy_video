@@ -302,17 +302,48 @@
       '<div class="loading"><div class="spinner"></div><br>보고서 불러오는 중...</div>';
     resultSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-    jsonp(`${SCRIPT_URL}?action=getSubmissions&반=${encodeURIComponent(s.반)}&번호=${encodeURIComponent(s.번호)}`)
-      .then(submissions => renderSubmissions(s, submissions))
-      .catch(err => {
-        document.getElementById('resultContent').innerHTML =
-          '<div class="empty-state">데이터를 불러오지 못했습니다.<br><small>' + err + '</small></div>';
-      });
+    Promise.all([
+      jsonp(`${SCRIPT_URL}?action=getPrepStatus&반=${encodeURIComponent(s.반)}&성명=${encodeURIComponent(s.성명)}`).catch(() => []),
+      jsonp(`${SCRIPT_URL}?action=getSubmissions&반=${encodeURIComponent(s.반)}&번호=${encodeURIComponent(s.번호)}`).catch(() => [])
+    ]).then(([prepList, submissions]) => {
+      document.getElementById('resultContent').innerHTML =
+        renderPrepStatusHtml(s, prepList) + renderSubmissionsHtml(s, submissions);
+    }).catch(err => {
+      document.getElementById('resultContent').innerHTML =
+        '<div class="empty-state">데이터를 불러오지 못했습니다.<br><small>' + err + '</small></div>';
+    });
   }
 
-  function renderSubmissions(s, submissions) {
+  function renderPrepStatusHtml(s, prepList) {
     let html = `<div class="submissions-section">
-      <h2>📋 ${s.성명} (${s.반}반 · ${s.모둠}모둠) — 제출 ${submissions.length}건</h2>`;
+      <h2>📝 발표 준비 현황 — ${prepList.length}건</h2>`;
+    if (prepList.length === 0) {
+      html += '<div class="empty-state">제출한 발표 준비 자료가 없습니다.</div>';
+    } else {
+      prepList.forEach(prep => {
+        const members = prep.모둠원.join(', ');
+        const link = prep.캔바링크
+          ? `<a href="${esc(prep.캔바링크)}" target="_blank" rel="noopener">${esc(prep.캔바링크)}</a>`
+          : '(미작성)';
+        html += `<div class="submission-card">
+          <div class="timestamp">모둠원: ${esc(members)}</div>
+          <div class="topic">📌 발표 주제: ${esc(prep.주제)}</div>
+          <div class="field-label">발표 대본</div>
+          <div class="field-value">${esc(prep.대본) || '(미작성)'}</div>
+          <div class="field-label">발표 자료 (캔바 링크)</div>
+          <div class="field-value">${link}</div>
+          <div class="field-label">예상 질문</div>
+          <div class="field-value">${prep.예상질문.length ? prep.예상질문.map(esc).join('<br>') : '(미작성)'}</div>
+        </div>`;
+      });
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function renderSubmissionsHtml(s, submissions) {
+    let html = `<div class="submissions-section">
+      <h2>📋 ${s.성명} (${s.반}반 · ${s.모둠}모둠) — 청중 보고서 ${submissions.length}건</h2>`;
     if (submissions.length === 0) {
       html += '<div class="empty-state">제출한 보고서가 없습니다.</div>';
     } else {
@@ -328,7 +359,7 @@
       });
     }
     html += '</div>';
-    document.getElementById('resultContent').innerHTML = html;
+    return html;
   }
 
   function esc(str) {
