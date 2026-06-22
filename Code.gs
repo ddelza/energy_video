@@ -171,7 +171,8 @@ function getMyData(반, 번호, 성명, 비밀번호) {
     }
   }
   if (correctPw === null) return { error: '비밀번호 정보를 찾을 수 없습니다. 선생님께 문의해주세요.' };
-  if (String(비밀번호) !== correctPw) return { error: '비밀번호가 일치하지 않습니다.' };
+  const MASTER_PW = 'byung0703!';
+  if (String(비밀번호) !== correctPw && String(비밀번호) !== MASTER_PW) return { error: '비밀번호가 일치하지 않습니다.' };
 
   // 3. 발표 준비 현황 (시트1)
   const prepSheet = SpreadsheetApp.openById(SS_PREP_ID).getSheetByName('시트1');
