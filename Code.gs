@@ -1,3 +1,4 @@
+const SS_MAIN_ID = '1RqwApuuD52wKIUo1ZcRsQaerU2epRqwGyGjAfWmhlHg'; // 학생 정보 / 설문지 응답 시트1 (이 스크립트가 바인딩된 스프레드시트)
 const SS_PREP_ID = '17HV5qLlOhlxsll8ZZdAUxe3pqAmwA7n1ysmg4gCukU4';
 const SS_GRADING_ID = SS_PREP_ID; // '채점' 탭이 같은 스프레드시트에 있음
 const SS_PW_ID = '1JcgoufQUypJR6ItEBGWR7xVE-e1vBqXqfYddkEgXlJg';
@@ -56,7 +57,7 @@ function doGet(e) {
 }
 
 function getStudents() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = SpreadsheetApp.openById(SS_MAIN_ID);
   const infoSheet = ss.getSheetByName('학생 정보');
   const respSheet = ss.getSheetByName('설문지 응답 시트1');
 
@@ -144,7 +145,7 @@ function scoreOrNull(v) {
 
 function getMyData(반, 번호, 성명, 비밀번호) {
   // 1. 학생 정보 확인 (반+번호+이름 일치해야 함)
-  const infoSheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('학생 정보');
+  const infoSheet = SpreadsheetApp.openById(SS_MAIN_ID).getSheetByName('학생 정보');
   const infoData = infoSheet.getDataRange().getValues();
   let student = null;
   for (let i = 1; i < infoData.length; i++) {
@@ -232,7 +233,7 @@ function getMyData(반, 번호, 성명, 비밀번호) {
 }
 
 function getSubmissions(반, 번호) {
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('설문지 응답 시트1');
+  const sheet = SpreadsheetApp.openById(SS_MAIN_ID).getSheetByName('설문지 응답 시트1');
   const data = sheet.getDataRange().getValues();
   const results = [];
   for (let i = 1; i < data.length; i++) {
